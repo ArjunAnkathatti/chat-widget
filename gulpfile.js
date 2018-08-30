@@ -9,22 +9,14 @@ var imagemin = require('gulp-imagemin');
 var browserSync = require('browser-sync');
 
 
-/*
- * Rebuild Jekyll & reload browserSync
- */
-gulp.task('jekyll-rebuild', ['jekyll-build'], function () {
-	browserSync.reload();
-});
 
 /*
- * Build the jekyll site and launch browser-sync
+ * launch browser-sync
  */
 gulp.task('browser-sync', function() {
 	browserSync({
 		server: {
-			directory: true,
-			baseDir: '',
-			index: 'index.html'
+			baseDir: "./"
 		}
 	});
 });
@@ -71,10 +63,11 @@ gulp.task('js', function(){
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/styles/**/*.scss', ['sass', 'jekyll-rebuild']);
+  gulp.watch('src/styles/**/*.scss', ['sass']);
   gulp.watch('src/js/**/*.js', ['js']);
   gulp.watch('src/fonts/**/*.{tff,woff,woff2}', ['fonts']);
   gulp.watch('src/img/**/*.{jpg,png,gif}', ['imagemin']);
+  gulp.watch('*.html').on('change', browserSync.reload)
 });
 
 gulp.task('default', ['js', 'sass', 'fonts', 'browser-sync', 'watch']);
