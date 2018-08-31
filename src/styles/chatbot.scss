@@ -2,8 +2,8 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    width: 300px;
-    height: 600px;
+    width: 350px;
+    height: 100vh;
     background-color: #fff;
     font-family: 'Lato', sans-serif;
 
@@ -19,11 +19,11 @@
 }
 
 .chatbox--tray {
-    bottom: -350px;
+    bottom: calc(50px - 100vh);;
 }
 
 .chatbox--closed {
-    bottom: -600px;
+    bottom: -100vh;
 }
 
 .chatbox .form-control:focus {
@@ -36,6 +36,7 @@
 }
 
 .chatbox__title {
+    color: #FDC42E;
     min-height: 50px;
     padding-right: 10px;
     background-color: #1f2836;
@@ -62,7 +63,7 @@
 }
 
 .chatbox__title h5 a {
-    color: #fff;
+    color: #FDC42E;
     max-width: 195px;
     display: inline-block;
     text-decoration: none;
@@ -199,15 +200,15 @@
 }
 
 .chatbox--empty {
-    height: 262px;
+    height: 300px;
 }
 
 .chatbox--empty.chatbox--tray {
-    bottom: -212px;
+    bottom: -250px;
 }
 
 .chatbox--empty.chatbox--closed {
-    bottom: -262px;
+    bottom: -300px;
 }
 
 .chatbox--empty .chatbox__body,
