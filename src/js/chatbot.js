@@ -1,9 +1,82 @@
-$(document).ready(function(){
+document.onreadystatechange = function(e)
+{
+    if (document.readyState === 'complete')
+    {
+        //dom is ready, window.onload fires later
+        console.log("hi, inside document.onreadystatechange function");
+        if(!window.jQuery)
+        {
+            console.log('jQuery is not loaded');
+            loadScript("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js", loadChatWindow);
+            console.log('JQuery is added now');
+        } else {
+            console.log('JQuery is already loaded');
+        }
+    }
+}
+window.onload = function(e)
+{
+    //document.readyState will be complete, it's one of the requirements for the window.onload event to be fired
+    //do stuff for when everything is loaded
+    console.log("hi, inside window.onload function");
+    
+}
+function loadStyle(url) {
+    var link = document.createElement("link")
+    link.type = 'text/css'
+    link.rel = "stylesheet";
+
+    if (link.readyState){
+        link.onreadystatechange = function(){
+            if (link.readyState == "loaded" ||
+                link.readyState == "complete"){
+                link.onreadystatechange = null;
+            }
+        };
+    } else {
+        link.onload = function(){
+
+        };
+    }
+    link.href = url;
+    document.getElementsByTagName("head")[0].appendChild(link);
+}
+function loadScript(url, callback){
+
+    var script = document.createElement("script")
+    script.type = "text/javascript";
+
+    if (script.readyState){  //IE
+        script.onreadystatechange = function(){
+            if (script.readyState == "loaded" ||
+                    script.readyState == "complete"){
+                script.onreadystatechange = null;
+                callback();
+            }
+        };
+    } else {  //Others
+        script.onload = function(){
+            callback();
+        };
+    }
+
+    script.src = url;
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+var loadChatWindow = function(){
+    console.log("hi, inside loadChatWindow function");
     // api.ai Credentials
     // please change the accessToken to configure this to work with yoru Dialogflow agent
     var baseUrl = "https://api.api.ai/v1/query?v=20160910&";
     var accessToken = "8cbe1c4eb8484f738b3e12cb4090683b";
 
+    if(typeof($.fn.popover) != 'undefined') {
+        console.log("bootstrap is already loaded");
+    } else {
+        console.log("bootstrap is not loaded");
+        loadStyle("https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css");
+        console.log("bootstrap is added dynamially");
+    }
     // Copy the compiled minified CSS from assets/css/chatbot.css 
     // and set chatCSSStyle variable with the copied content as shown below
     var chatCSSStyle = "<style type=\"text/css\">.chatbox{position:fixed;bottom:0;right:0;width:350px;height:100vh;background-color:#fff;font-family:'Lato',sans-serif;-webkit-transition:all 600ms cubic-bezier(.19,1,.22,1);transition:all 600ms cubic-bezier(.19,1,.22,1);display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;z-index:1000}.chatbox--tray{bottom:calc(50px - 100vh)}.chatbox--closed{bottom:-100vh}.chatbox .form-control:focus{border-color:#1f2836}.chatbox__body,.chatbox__title{border-bottom:none}.chatbox__title{color:#fdc42e;min-height:50px;padding-right:10px;background-color:#1f2836;border-top-left-radius:4px;border-top-right-radius:4px;cursor:pointer;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center}.chatbox__title h5{height:50px;margin:0 0 0 15px;line-height:50px;position:relative;padding-left:20px;-webkit-flex-grow:1;flex-grow:1}.chatbox__title h5 a{color:#fdc42e;max-width:195px;display:inline-block;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatbox__title h5:before{content:'';display:block;position:absolute;top:50%;left:0;width:12px;height:12px;background:#4caf50;border-radius:6px;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.chatbox__title__close,.chatbox__title__tray{width:24px;height:24px;outline:0;border:0;background-color:transparent;opacity:.5;cursor:pointer;-webkit-transition:opacity 200ms;transition:opacity 200ms}.chatbox__title__close:hover,.chatbox__title__tray:hover{opacity:1}.chatbox__title__tray span{width:12px;height:12px;display:inline-block;border-bottom:2px solid #fff}.chatbox__title__close svg{vertical-align:middle;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.2px}.chatbox__body,.chatbox__credentials{padding:15px;border-top:0;background-color:#fff;border-left:1px solid #ddd;border-right:1px solid #ddd;-webkit-flex-grow:1;flex-grow:1}.chatbox__credentials{display:none}.chatbox__credentials .form-control{-webkit-box-shadow:none;box-shadow:none}.chatbox__body{overflow-y:auto}.chatbox__body__message{position:relative}.chatbox__body__message p{padding:10px;border-radius:4px;font-size:14px;background-color:#fff;-webkit-box-shadow:1px 1px rgba(100,100,100,.1);box-shadow:1px 1px rgba(100,100,100,.1)}.chatbox__body__message img{width:40px;height:40px;border-radius:4px;border:2px solid #fcfcfc;position:absolute;top:5px}.chatbox__body__message--left p{width:85%;float:left;text-align:left;background-color:#e5f1d8}.chatbox__body__message--left img{left:-5px}.chatbox__body__message--right p{width:85%;float:right;text-align:right;background-color:#ddeaf1}.chatbox__body__message--right img{right:-5px}.chatbox__message{padding:15px;min-height:50px;outline:0;resize:none;font-size:12px;border:1px solid #ddd;border-bottom:none;background-color:#fefefe}.chatbox--empty{height:300px}.chatbox--empty.chatbox--tray{bottom:-250px}.chatbox--empty.chatbox--closed{bottom:-300px}.chatbox--empty .chatbox__body,.chatbox--empty .chatbox__message{display:none}.chatbox--empty .chatbox__credentials{display:block}</style>";
@@ -217,4 +290,4 @@ $(document).ready(function(){
         }
     }
 
-});
+}
