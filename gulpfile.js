@@ -1,3 +1,4 @@
+/* import all the required packages and modules*/
 var gulp = require('gulp');
 var csso = require('gulp-csso');
 var uglify = require('gulp-uglify');
@@ -8,10 +9,8 @@ var cp = require('child_process');
 var imagemin = require('gulp-imagemin');
 var browserSync = require('browser-sync');
 
-
-
 /*
- * launch browser-sync
+ * launch browser-sync and start serving from the current directory
  */
 gulp.task('browser-sync', function() {
 	browserSync({
@@ -51,7 +50,7 @@ gulp.task('imagemin', function() {
 		.pipe(gulp.dest('assets/img/'));
 });
 
-/**
+/*
  * Compile and minify js
  */
 gulp.task('js', function(){
@@ -62,10 +61,16 @@ gulp.task('js', function(){
 		.pipe(gulp.dest('assets/js/'))
 });
 
+/* 
+* reload the browserSync \
+*/
 gulp.task('app-rebuild', function () {
 	browserSync.reload();
 });
 
+/* 
+* watch for any changes in js, fonts, images and html and reload the browserSync 
+*/
 gulp.task('watch', function() {
   gulp.watch('src/styles/**/*.scss', ['sass']);
   gulp.watch('src/js/**/*.js', ['js']);
@@ -74,5 +79,8 @@ gulp.task('watch', function() {
   gulp.watch(['*html'], ['app-rebuild']);
 });
 
+/* 
+* define gulp default task and most essentials to the list 
+*/
 gulp.task('default', ['js', 'sass', 'fonts', 'browser-sync', 'watch']);
 

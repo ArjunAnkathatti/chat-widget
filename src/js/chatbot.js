@@ -1,21 +1,16 @@
 $(document).ready(function(){
-    $("p").click(function(){
-        $(this).hide();
-    });
-    appendText();
-    appendChatWindow();
-});
+    // api.ai Credentials
+    // please change the accessToken to configure this to work with yoru Dialogflow agent
+    var baseUrl = "https://api.api.ai/v1/query?v=20160910&";
+    var accessToken = "8cbe1c4eb8484f738b3e12cb4090683b";
 
-function appendText() {
-    var txt1 = "<p>Text.</p>";               // Create element with HTML  
-    var txt2 = $("<p></p>").text("Text.");   // Create with jQuery
-    var txt3 = document.createElement("p");  // Create with DOM
-    txt3.innerHTML = "Text.";
-    $("body").append(txt1, txt2, txt3);      // Append the new elements 
-}
+    // Copy the compiled minified CSS from assets/css/chatbot.css 
+    // and set chatCSSStyle variable with the copied content as shown below
+    var chatCSSStyle = "<style type=\"text/css\">.chatbox{position:fixed;bottom:0;right:0;width:350px;height:100vh;background-color:#fff;font-family:'Lato',sans-serif;-webkit-transition:all 600ms cubic-bezier(.19,1,.22,1);transition:all 600ms cubic-bezier(.19,1,.22,1);display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;z-index:1000}.chatbox--tray{bottom:calc(50px - 100vh)}.chatbox--closed{bottom:-100vh}.chatbox .form-control:focus{border-color:#1f2836}.chatbox__body,.chatbox__title{border-bottom:none}.chatbox__title{color:#fdc42e;min-height:50px;padding-right:10px;background-color:#1f2836;border-top-left-radius:4px;border-top-right-radius:4px;cursor:pointer;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center}.chatbox__title h5{height:50px;margin:0 0 0 15px;line-height:50px;position:relative;padding-left:20px;-webkit-flex-grow:1;flex-grow:1}.chatbox__title h5 a{color:#fdc42e;max-width:195px;display:inline-block;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatbox__title h5:before{content:'';display:block;position:absolute;top:50%;left:0;width:12px;height:12px;background:#4caf50;border-radius:6px;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.chatbox__title__close,.chatbox__title__tray{width:24px;height:24px;outline:0;border:0;background-color:transparent;opacity:.5;cursor:pointer;-webkit-transition:opacity 200ms;transition:opacity 200ms}.chatbox__title__close:hover,.chatbox__title__tray:hover{opacity:1}.chatbox__title__tray span{width:12px;height:12px;display:inline-block;border-bottom:2px solid #fff}.chatbox__title__close svg{vertical-align:middle;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.2px}.chatbox__body,.chatbox__credentials{padding:15px;border-top:0;background-color:#fff;border-left:1px solid #ddd;border-right:1px solid #ddd;-webkit-flex-grow:1;flex-grow:1}.chatbox__credentials{display:none}.chatbox__credentials .form-control{-webkit-box-shadow:none;box-shadow:none}.chatbox__body{overflow-y:auto}.chatbox__body__message{position:relative}.chatbox__body__message p{padding:10px;border-radius:4px;font-size:14px;background-color:#fff;-webkit-box-shadow:1px 1px rgba(100,100,100,.1);box-shadow:1px 1px rgba(100,100,100,.1)}.chatbox__body__message img{width:40px;height:40px;border-radius:4px;border:2px solid #fcfcfc;position:absolute;top:5px}.chatbox__body__message--left p{width:85%;float:left;text-align:left;background-color:#e5f1d8}.chatbox__body__message--left img{left:-5px}.chatbox__body__message--right p{width:85%;float:right;text-align:right;background-color:#ddeaf1}.chatbox__body__message--right img{right:-5px}.chatbox__message{padding:15px;min-height:50px;outline:0;resize:none;font-size:12px;border:1px solid #ddd;border-bottom:none;background-color:#fefefe}.chatbox--empty{height:300px}.chatbox--empty.chatbox--tray{bottom:-250px}.chatbox--empty.chatbox--closed{bottom:-300px}.chatbox--empty .chatbox__body,.chatbox--empty .chatbox__message{display:none}.chatbox--empty .chatbox__credentials{display:block}</style>";
+    $('head').append(chatCSSStyle);
 
-function appendChatWindow() {
-    var text = "<div class=\"chatbox chatbox--tray chatbox--empty\"> \
+    // --------- Start Chat Window HTML -------------//
+    var chatWindowHTML = "<div class=\"chatbox chatbox--tray chatbox--empty\"> \
     <div class=\"chatbox__title\"> \
     <h5><a href=\"#\">VIDURA Advisor</a></h5> \
     <!-- minimize button --> \
@@ -35,14 +30,6 @@ function appendChatWindow() {
     <!-- close button ends --> \
     </div> \
     <div class=\"chatbox__body\" id=\"chatbox_body_content\"> \
-    <div class=\"chatbox__body__message chatbox__body__message--left\"> \
-    <img src=\"assets/img/vidura.jpg\" alt=\"VIMAN\"> \
-    <p>Hello, Welcome to CyNeuro portal, I am VIDURA your virtual agent.How can I help you?</p> \
-    </div> \
-    <!-- <div class=\"chatbox__body__message chatbox__body__message--right\"> \
-    <img src=\"{{asset('images/user_icon.png')}}\" alt=\"User\"> \
-    <p>Nulla vel turpis vulputate, tincidunt lectus sed, porta arcu.</p> \
-    </div> --> \
     </div> \
     <form class=\"chatbox__credentials\"> \
     <div class=\"form-group\"> \
@@ -57,97 +44,177 @@ function appendChatWindow() {
     </form> \
     <input type=\"hidden\" id=\"chat_context\" name=\"conversation_id\" value=\"{}\"> \
     <input type=\"text\" id=\"user_input\" name=\"user_input\" class=\"chatbox__message\" placeholder=\"Write here\"></input> \
-    </div>"
-    $("body").append(text);      // Append the new elements 
-}
+    </div>";
+    // ---------End Chat Window HTML -------------//
 
+    // --------- append chat window HTML contnet to the body ------------//
+    $("body").append(chatWindowHTML); 
 
-$(document).ready(function() {
+    // ------------- declare and intialize chat window widget variables ----------------//
     var $chatbox = $('.chatbox'),
     $chatboxTitle = $('.chatbox__title'),
     $chatboxTitleClose = $('.chatbox__title__close'),
     $chatboxCredentials = $('.chatbox__credentials');
+
+    // ------------
     $chatboxTitle.on('click', function() {
         $chatbox.toggleClass('chatbox--tray');
-            // to scroll down to the bottom of the chat tray  or chat body
-            //$('#chatbox_body_content').scrollTop(1E10);
         });
+
+    // -------------  execute this when close button is clicked   ---------------------//
     $chatboxTitleClose.on('click', function(e) {
             e.stopPropagation();
             $chatbox.addClass('chatbox--closed');
-            $('#chatbox_body_content').html("<div class=\"chatbox__body__message chatbox__body__message--left\"><img src=\"assets/img/vidura.jpg\" alt=\"VIDURA\"><p>VIDURA: Hello, Welcome to CyNeuro portal, I am VIDURA your virtual agent.How can I help you?</p></div>");
-        });
+    });
+
+    // -------------     ---------------------//
     $chatbox.on('transitionend', function() {
         if ($chatbox.hasClass('chatbox--closed')) $chatbox.remove();
     });
+
+    // ----------- submit button function in the chatbot window -------------//
     $chatboxCredentials.on('submit', function(e) {
         e.preventDefault();
         $chatbox.removeClass('chatbox--empty');
-            // to scroll down to the bottom of the chat tray  or chat body
-            //$('#chatbox_body_content').scrollTop(1E10);
+        var userName = $('#inputName').val();
+        var userEmail = $('#inputEmail').val();
+        setBotResponse('Hello <b>' + userName + '</b>!, welcome to CyNeuro portal, I am VIDURA your virtual agent.How can I help you?');
+    });
+
+
+    // given a string set the usertext in the chat window with appropriate styling
+    function setUserText(val) {
+        var userTextBefore = '<div class="chatbox__body__message chatbox__body__message--right"><p>';
+        var userTextAfter = '</p></div>';
+        var userTextFinal = userTextBefore + val + userTextAfter;
+        $('#chatbox_body_content').append(userTextFinal);
+        // set the value of input field to empty string
+        $('#user_input').val('');
+        // scroll to the bottom of the chatbot body
+        $('#chatbox_body_content').scrollTop(1E10);
+    }
+
+    function setUserContext(val) {
+
+    }
+
+    // given a string set the bot response in the chat window with appropriate styling
+    function setBotResponse(val) {
+        if($.trim(val) == '') {
+                val = 'I couldn\'t get that. Let\' try something else!';
+            } else {
+                val = val.replace(new RegExp('\r?\n','g'), '<br />');
+            }
+        var botResponseBefore = '<div class="chatbox__body__message chatbox__body__message--left"><p>';
+        var botResponseAfter = '</p></div>';
+        var botResponseFinal = botResponseBefore + val + botResponseAfter;
+        $('#chatbox_body_content').append(botResponseFinal);
+        // scroll to the bottom of the chatbot body
+        $('#chatbox_body_content').scrollTop(1E10);
+    }
+
+    // send i.e ajax call to the dialog server 
+    // pass the user entered text and get the response
+    function sendUserText(text, context) {
+        //setBotResponse('bot reply goes here');
+        //setUserContext();
+        $.ajax({
+            type: "GET",
+            url: baseUrl+"query="+text+"&lang=en-us&sessionId="+mysession,
+            contentType: "application/json",
+            dataType: "json",
+            headers: {
+                "Authorization": "Bearer " + accessToken
+            },
+            // data: JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" }),
+            success: function(data) {
+                main(data);
+                // console.log(data);
+            },
+            error: function(e) {
+                console.log (e);
+            }
         });
+    }
 
-        // this function executes when user hits enter key in chat textarea
-        $("#user_input").keypress(function(e){
-            var code = (e.keyCode ? e.keyCode : e.which);
-            if (code == 13){
-                var user_input = $('#user_input').val();
-                var context_json = $('#chat_context').val();
+    // execute this when user hits enter button in the chat window input
+    $("#user_input").keypress(function(e){
+        var code = (e.keyCode ? e.keyCode : e.which);
+        if (code == 13){
+            // get user query text
+            var userText = $('#user_input').val();
+            var contextJSON = $('#chat_context').val();
 
-                var user_before = '<div class="chatbox__body__message chatbox__body__message--right"><img src="assets/img/user_icon.png" alt="User"><p>';
-                var after = '</p></div>';
-                var user_finalValue = user_before + user_input + after;
-                $('#chatbox_body_content').append(user_finalValue);
-                $('#user_input').val('');
+            // set the user text in the chat window 
+            setUserText(userText);
 
-                // scroll to the bottom of the chatbot body
-                $('#chatbox_body_content').scrollTop(1E10);
+            // send the user text to the chat server
+            sendUserText(userText, contextJSON);
 
-                var viman_before = '<div class="chatbox__body__message chatbox__body__message--left"><img src="assets/img/vidura.jpg" alt="VIMAN"><p>';
-                var viman_reply = viman_before + "bot reply goes here" + after;
-                $('#chatbox_body_content').append(viman_reply);
+        } // end of if condition
+    }); // end of keypress function
 
-            //     $.ajax({
-            //         url: "http://localhost/CyNeuroCloud/CyNeuroLaravel/public/chatbot",
-            //         data: {user_input: user_input, context: context_json},
-            //         async: false, 
-            //         success: function(result){
-            //             var viman_before = '<div class="chatbox__body__message chatbox__body__message--left"><img src="assets/img/vidura.jpg" alt="VIMAN"><p>';
+    // Session Init (is important so that each user interaction is unique)-----------
+    var session = function() {
+        // Retrieve the object from storage
+        if(sessionStorage.getItem('session')) {
+            var retrievedSession = sessionStorage.getItem('session');
+        } else {
+            // Random Number Generator
+            var randomNo = Math.floor((Math.random() * 1000) + 1);
+            // get Timestamp
+            var timestamp = Date.now();
+            // get Day
+            var date = new Date();
+            var weekday = new Array(7);
+            weekday[0] = "Sunday";
+            weekday[1] = "Monday";
+            weekday[2] = "Tuesday";
+            weekday[3] = "Wednesday";
+            weekday[4] = "Thursday";
+            weekday[5] = "Friday";
+            weekday[6] = "Saturday";
+            var day = weekday[date.getDay()];
+            // Join random number+day+timestamp
+            var session_id = randomNo+day+timestamp;
+            // Put the object into storage
+            sessionStorage.setItem('session', session_id);
+            var retrievedSession = sessionStorage.getItem('session');
+        }
+        return retrievedSession;
+        // console.log('session: ', retrievedSession);
+    }
 
-            //             var res = result.split("~");
+    // Call Session init
+    var mysession = session();
 
-            //             if (res[0] === 'VIDURA : ActionAction_Step01') {
-            //               $("#step01_next_button").click();
-            //               res[0] = 'VIDURA: Great lets get started with the requirements</br>In this step you will define geometric properties of a NEURON cell.</br>Please select one of the 3 geometries and specify the length and diameter of the dendri and soma.</br>The unit of length is in micro meters (um). Some sample values can be any number in the range 10 to 500.';
-            //           } else if (res[0] === 'VIDURA : ActionAction_Step02') {
-            //               $("#step02_next_button").click();
-            //               res[0] = 'VIDURA: In this step you choose the ION channels of the NEURON cell. Please check at-least one of the three given ION chaneels.'
-            //           } else if (res[0] === 'VIDURA : ActionAction_Step03') {
-            //               $("#step03_next_button").click();
-            //               res[0] = 'VIDURA: In this step you will choose simulation method and specify its parameters.'
-            //           } else if (res[0] === 'VIDURA : ActionAction_Step04') {
-            //               $("#step04_next_button").click();
-            //               res[0] = 'VIDURA: This is the last step where you choose a graph type to plot the resutls of your simulation.'
-            //           }
+    // Main function: this method has the logic to handle differen parts of the response returned from the chat server
+    function main(data) {
+        var action = data.result.action;
+        var speech = data.result.fulfillment.speech;
+        // use incomplete if you use required in api.ai questions in intent
+        // check if actionIncomplete = false
+        var incomplete = data.result.actionIncomplete;
+        if(data.result.fulfillment.messages) { // check if messages are there
+            if(data.result.fulfillment.messages.length > 0) { //check if quick replies are there
+                var suggestions = data.result.fulfillment.messages[1];
+            }
+        }
+        switch(action) {
+            // case 'your.action': // set in api.ai
+            // Perform operation/json api call based on action
+            // Also check if (incomplete = false) if there are many required parameters in an intent
+            // if(suggestions) { // check if quick replies are there in api.ai
+            //   addSuggestion(suggestions);
+            // }
+            // break;
+            default:
+                setBotResponse(speech);
+                if(suggestions) { // check if quick replies are there in api.ai
+                    //addSuggestion(suggestions);
+                }
+                break;
+        }
+    }
 
-            //           var viman_finalValue = viman_before + res[0] + after;
-            //           $('#chatbox_body_content').append(viman_finalValue);
-            //           if (res[0].includes('error')) {
-            //               $('#chat_context').val("{}");  
-            //           } else {
-            //               $('#chat_context').val(res[1]);  
-            //           }
-
-            //       },
-            //       error: function(error){
-            //         $('#chatbox_body_content').append(error);
-            //     }
-            // });
-
-                // scroll to the bottom of the chatbot body
-                $('#chatbox_body_content').scrollTop(1E10);
-
-
-            } // end of if condition
-          }); // end of keypress function
-    }); // end of document ready function
+});
