@@ -5,27 +5,26 @@
     bottom: 0;
     right: 0;
     width: 350px;
-    height: 100vh;
+    height: 500px;
     background-color: #fff;
-    font-family: 'Lato', sans-serif;
-
+    font-family: 'Roboto', sans-serif;
     -webkit-transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
     transition: all 600ms cubic-bezier(0.19, 1, 0.22, 1);
-
     display: -webkit-flex;
     display: flex;
-
     -webkit-flex-direction: column;
     flex-direction: column;
     z-index: 1000;
 }
 
 .chatbox--tray {
-    bottom: calc(50px - 100vh);;
+    /*bottom: calc(50px - 70vh);;*/
+    bottom: -250px;
 }
 
 .chatbox--closed {
-    bottom: -100vh;
+    /*bottom: -100vh;*/
+    bottom: -300px;
 }
 
 .chatbox .form-control:focus {
@@ -126,7 +125,7 @@
 .chatbox__credentials {
     padding: 15px;
     border-top: 0;
-    background-color: $chat-body-background-color;
+    background-color: #fff;
     border-left: 1px solid #ddd;
     border-right: 1px solid #ddd;
 
@@ -160,40 +159,96 @@
     box-shadow: 1px 1px rgba(100, 100, 100, 0.1);
 }
 
-.chatbox__body__message img {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    border: 2px solid #fcfcfc;
+.chatbox .chatbox__body .botResponse:before {
+    content: "";
+    width: 0;
+    height: 0;
     position: absolute;
-    top: 5px;
+    border-top: 0px solid rgba(0,0,0,0);
+    border-bottom: 15px solid rgba(0,0,0,0);
+    border-right: 15px solid #7CAA2D; /* color should be same as backgroup color of .botResponse */
+    left: -15px;
+    margin-top: -10px; /* this value should be same as .botResponse padding value */
 }
 
-.chatbox__body__message--left p {
-    /* margin-left: 15px; */
-    /* padding-left: 30px; */
-    width: 85%;
+.botResponse {
+    clear: both;
+    background-color: #7CAA2D;
+    color: #ffffff;
+    padding: 10px;
     float: left;
-    text-align: left;
-    background-color: $bot-response-background-color;
+    border-radius: 3px;
+    box-shadow: 0 0px 1px 0 rgba(0,0,0,0.16), 0 0px 10px 0 rgba(0,0,0,0.12);
+    border-top-left-radius: 0;
+    position: relative;
+    word-wrap: break-word;
 }
 
-.chatbox__body__message--left img {
-    left: -5px;
-}
-
-
-.chatbox__body__message--right p {
-    /* margin-right: 15px; */
-    /* padding-right: 30pchatbox__messagex; */
-    width: 85%;
+.userText {
+    clear: both;
+    background-color: #9C27B0;
+    color: #ffffff;
+    padding: 10px;
     float: right;
-    text-align: right;
-    background-color: $user-text-background-color;
+    border-radius: 3px;
+    box-shadow: 0 0px 1px 0 rgba(0,0,0,0.16), 0 0px 10px 0 rgba(0,0,0,0.12);
+    border-top-right-radius: 0;
+    position: relative;
+    word-wrap: break-word;
 }
 
-.chatbox__body__message--right img {
-    right: -5px;
+.chatbox .chatbox__body .userText:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    border-top: 0px solid rgba(0,0,0,0);
+    border-bottom: 15px solid rgba(0,0,0,0);
+    border-left: 15px solid #9C27B0; /* color should be same as backgroup color of .userText */
+    right: -15px;
+    margin-top: -10px; /* this value should be same as .userText padding value */
+}
+
+.chatbox .chatbox__body .suggestions:before {
+    content: "";
+    width: 0;
+    height: 0;
+    position: absolute;
+    border-top: 0px solid rgba(0,0,0,0);
+    border-bottom: 15px solid rgba(0,0,0,0);
+    border-right: 15px solid #7CAA2D; /* color should be same as backgroup color of .botResponse */
+    left: -15px;
+    margin-top: -10px; /* this value should be same as .botResponse padding value */
+}
+
+.suggestions {
+    clear: both;
+    background-color: #7CAA2D;
+    color: #ffffff;
+    padding: 10px;
+    float: left;
+    border-radius: 3px;
+    box-shadow: 0 0px 1px 0 rgba(0,0,0,0.16), 0 0px 10px 0 rgba(0,0,0,0.12);
+    border-top-left-radius: 0;
+    position: relative;
+    /*word-wrap: break-word;*/
+}
+
+.sugg-title {
+    
+}
+
+.sugg-options {
+    display: block;
+    background-color: #9C27B0;
+    color: #ffffff;
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 300;
 }
 
 .chatbox__message {
@@ -202,22 +257,41 @@
     outline: 0;
     resize: none;
     border: none;
-    font-size: 12px;
+    font-size: 16px;
     border: 1px solid #ddd;
     border-bottom: none;
     background-color: #fefefe;
 }
 
+
+/* height of the chat window when it is 
+empyt i.e before entering the chat */
 .chatbox--empty {
     height: 300px;
 }
 
+/* when chat body is displayed and user clicks on the title */
+.chatbox.chatbox--tray {
+    bottom: -450px;
+}
+
+/* when chat body is displayed and user clicks on the close button */
+.chatbox.chatbox--closed {
+    bottom: -450px;
+    right: -250px;
+}
+
+/* when chatting has not yet started i.e 
+when chat window is empty and user clicks on the title */
 .chatbox--empty.chatbox--tray {
     bottom: -250px;
 }
 
+/* when chatting has not yet started i.e 
+when chat window is empty and user clicks on close button */
 .chatbox--empty.chatbox--closed {
-    bottom: -300px;
+    bottom: -250px;
+    right: -250px;
 }
 
 .chatbox--empty .chatbox__body,
@@ -225,6 +299,7 @@
     display: none;
 }
 
+/* when chatbot is empty and user details form is displayed */
 .chatbox--empty .chatbox__credentials {
     display: block;
 }
